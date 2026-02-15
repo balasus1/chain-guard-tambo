@@ -1,0 +1,63 @@
+{
+  "version": "1.0",
+  "description": "Chain-Guard SLA configuration for Archestra audit agent",
+  "globalDefaults": {
+    "maxTransitDaysDomestic": 5,
+    "maxTransitDaysInternational": 10,
+    "warningDelayHours": 24,
+    "breachDelayHours": 48,
+    "customerVisibleDelayHours": 24
+  },
+  "vendorOverrides": {
+    "ups": {
+      "maxTransitDaysDomestic": 5,
+      "maxTransitDaysInternational": 8
+    },
+    "fedex": {
+      "maxTransitDaysDomestic": 4,
+      "maxTransitDaysInternational": 7
+    },
+    "dhl": {
+      "maxTransitDaysDomestic": 5,
+      "maxTransitDaysInternational": 10
+    },
+    "usps": {
+      "maxTransitDaysDomestic": 7,
+      "maxTransitDaysInternational": 14
+    },
+    "tnt": {
+      "maxTransitDaysDomestic": 5,
+      "maxTransitDaysInternational": 8
+    }
+  },
+  "routeRules": [
+    {
+      "origin": "US",
+      "destination": "US",
+      "maxTransitDays": 5,
+      "label": "US Domestic"
+    },
+    {
+      "origin": "GB",
+      "destination": "US",
+      "maxTransitDays": 10,
+      "label": "UK to US"
+    },
+    {
+      "origin": "NL",
+      "destination": "FR",
+      "maxTransitDays": 6,
+      "label": "EU Intra-region"
+    }
+  ],
+  "allowedDelaysBySeverity": {
+    "low": 12,
+    "medium": 24,
+    "high": 0
+  },
+  "temperatureSensitiveRules": {
+    "maxTransitDays": 3,
+    "strictTemperatureBreach": true,
+    "autoFailOnBreach": true
+  }
+}

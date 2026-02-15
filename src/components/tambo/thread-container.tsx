@@ -43,8 +43,8 @@ export const ThreadContainer = React.forwardRef<
     <div
       ref={mergedRef}
       className={cn(
-        // Base layout and styling
-        "flex flex-col overflow-hidden bg-background",
+        // Base layout and styling - transparent for Lovable gradient
+        "flex flex-col overflow-hidden bg-transparent",
         "h-full",
 
         // Add smooth transitions for layout changes

@@ -33,9 +33,9 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+    <div className="min-h-screen min-h-dvh app-lovable-bg">
       {/* Header */}
-      <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="border-b border-white/20 dark:border-slate-700/50 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -78,7 +78,7 @@ export default function Home() {
         {/* Search Bar */}
         <div className="max-w-3xl mx-auto mb-16">
           <form onSubmit={handleSearch} className="relative">
-            <div className="flex items-center gap-2 bg-background border-2 border-border rounded-lg shadow-lg p-2">
+            <div className="flex items-center gap-2 glossy-card p-2 sm:p-3">
               <Search className="h-5 w-5 text-muted-foreground ml-2 flex-shrink-0" />
               <input
                 type="text"
@@ -110,7 +110,7 @@ export default function Home() {
               <button
                 key={example.number}
                 onClick={() => handleExampleClick(example.number)}
-                className="p-4 bg-background border border-border rounded-lg hover:border-primary hover:shadow-md transition-all text-left group"
+                className="p-4 glossy-card hover:shadow-lg transition-all text-left group"
               >
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-2">
@@ -142,8 +142,8 @@ export default function Home() {
         </div>
 
         {/* Features */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          <div className="text-center p-6 bg-background border border-border rounded-lg">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="text-center p-6 glossy-card">
             <div className="inline-flex p-3 bg-primary/10 rounded-lg mb-4">
               <Clock className="h-6 w-6 text-primary" />
             </div>
@@ -154,7 +154,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="text-center p-6 bg-background border border-border rounded-lg">
+          <div className="text-center p-6 glossy-card">
             <div className="inline-flex p-3 bg-primary/10 rounded-lg mb-4">
               <AlertTriangle className="h-6 w-6 text-primary" />
             </div>
@@ -165,7 +165,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="text-center p-6 bg-background border border-border rounded-lg">
+          <div className="text-center p-6 glossy-card">
             <div className="inline-flex p-3 bg-primary/10 rounded-lg mb-4">
               <MapPin className="h-6 w-6 text-primary" />
             </div>

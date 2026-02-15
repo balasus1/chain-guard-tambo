@@ -32,10 +32,10 @@ function ChainGuardContent() {
       tamboUrl={process.env.NEXT_PUBLIC_TAMBO_URL}
       mcpServers={mcpServers}
     >
-      <div className="min-h-screen flex flex-col">
+      <div className="app-lovable-bg min-h-screen min-h-dvh flex flex-col">
         {/* Header */}
-        <div className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <div className="border-b border-white/20 dark:border-slate-700/50 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl flex-shrink-0 shadow-sm">
+          <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 sm:py-3">
             <div className="flex items-center justify-between">
               <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
                 <div className="p-2 bg-primary/10 rounded-lg">
@@ -55,12 +55,12 @@ function ChainGuardContent() {
         </div>
 
         {/* Tabs */}
-        <div className="border-b border-border bg-background/50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex gap-1">
+        <div className="border-b border-white/20 dark:border-slate-700/50 bg-white/50 dark:bg-slate-900/50 backdrop-blur flex-shrink-0">
+          <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+            <div className="flex gap-1 overflow-x-auto">
               <button
                 onClick={() => setActiveTab("search")}
-                className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 ${
+                className={`px-3 sm:px-4 py-2 text-sm font-medium transition-colors border-b-2 flex-shrink-0 ${
                   activeTab === "search"
                     ? "border-primary text-primary"
                     : "border-transparent text-muted-foreground hover:text-foreground"
@@ -70,7 +70,7 @@ function ChainGuardContent() {
               </button>
               <button
                 onClick={() => setActiveTab("ai")}
-                className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 flex items-center gap-2 ${
+                className={`px-3 sm:px-4 py-2 text-sm font-medium transition-colors border-b-2 flex items-center gap-2 flex-shrink-0 ${
                   activeTab === "ai"
                     ? "border-primary text-primary"
                     : "border-transparent text-muted-foreground hover:text-foreground"
@@ -84,15 +84,37 @@ function ChainGuardContent() {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-auto">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="flex-1 overflow-auto min-h-0 bg-transparent">
+          <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
             {activeTab === "search" ? (
               <Suspense fallback={<div>Loading...</div>}>
                 <TrackingSearch />
               </Suspense>
             ) : (
-              <div className="max-w-4xl mx-auto">
-                <MessageThreadFull className="h-[calc(100vh-200px)]" />
+              <div className="max-w-4xl mx-auto w-full">
+                <MessageThreadFull
+                  className="h-[calc(100dvh-140px)] sm:h-[calc(100vh-200px)] min-h-[320px]"
+                  initialSuggestions={[
+                    {
+                      id: "handle-incident",
+                      title: "Handle shipment",
+                      detailedSuggestion: "Handle shipment FX9876543210 end-to-end",
+                      messageId: "handle-incident-query",
+                    },
+                    {
+                      id: "audit-shipment",
+                      title: "Audit shipment",
+                      detailedSuggestion: "Audit shipment FX9876543210",
+                      messageId: "audit-query",
+                    },
+                    {
+                      id: "list-shipments",
+                      title: "List shipments",
+                      detailedSuggestion: "Show me all shipments",
+                      messageId: "list-query",
+                    },
+                  ]}
+                />
               </div>
             )}
           </div>

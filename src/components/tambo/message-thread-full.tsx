@@ -46,6 +46,10 @@ export interface MessageThreadFullProps extends React.HTMLAttributes<HTMLDivElem
    * @example variant="compact"
    */
   variant?: VariantProps<typeof messageVariants>["variant"];
+  /**
+   * Optional custom suggestions to show when the thread is empty.
+   */
+  initialSuggestions?: Suggestion[];
 }
 
 /**
@@ -54,7 +58,7 @@ export interface MessageThreadFullProps extends React.HTMLAttributes<HTMLDivElem
 export const MessageThreadFull = React.forwardRef<
   HTMLDivElement,
   MessageThreadFullProps
->(({ className, variant, ...props }, ref) => {
+>(({ className, variant, initialSuggestions, ...props }, ref) => {
   const { containerRef, historyPosition } = useThreadContainerContext();
   const mergedRef = useMergeRefs<HTMLDivElement | null>(ref, containerRef);
 
@@ -99,8 +103,8 @@ export const MessageThreadFull = React.forwardRef<
         className={className}
         {...props}
       >
-        <ScrollableMessageContainer className="p-4">
-          <ThreadContent variant={variant}>
+        <ScrollableMessageContainer className="p-3 sm:p-4 overflow-x-hidden">
+          <ThreadContent variant={variant ?? "solid"}>
             <ThreadContentMessages />
           </ThreadContent>
         </ScrollableMessageContainer>
@@ -111,7 +115,7 @@ export const MessageThreadFull = React.forwardRef<
         </MessageSuggestions>
 
         {/* Message input */}
-        <div className="px-4 pb-4">
+        <div className="px-3 sm:px-4 pb-3 sm:pb-4 flex-shrink-0">
           <MessageInput>
             <MessageInputTextarea placeholder="Type your message or paste images..." />
             <MessageInputToolbar>
@@ -127,7 +131,7 @@ export const MessageThreadFull = React.forwardRef<
         </div>
 
         {/* Message suggestions */}
-        <MessageSuggestions initialSuggestions={defaultSuggestions}>
+        <MessageSuggestions initialSuggestions={initialSuggestions ?? defaultSuggestions}>
           <MessageSuggestionsList />
         </MessageSuggestions>
       </ThreadContainer>

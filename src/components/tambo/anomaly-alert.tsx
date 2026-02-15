@@ -63,8 +63,8 @@ export type AnomalyAlertProps = z.infer<typeof anomalyAlertSchema>;
 /**
  * Get icon and color for anomaly type
  */
-const getAnomalyIcon = (type: string) => {
-  const typeLower = type.toLowerCase();
+const getAnomalyIcon = (type: string | undefined) => {
+  const typeLower = (type ?? "").toLowerCase();
   if (typeLower.includes("delay")) {
     return { icon: Clock, color: "text-yellow-600 dark:text-yellow-400" };
   }
@@ -128,7 +128,9 @@ export const AnomalyAlert = React.forwardRef<HTMLDivElement, AnomalyAlertProps>(
     // Sort by severity (high first)
     const sortedAnomalies = [...anomalies].sort((a, b) => {
       const severityOrder = { high: 3, medium: 2, low: 1 };
-      return severityOrder[b.severity] - severityOrder[a.severity];
+      const aSev = (a.severity ?? "medium") as keyof typeof severityOrder;
+      const bSev = (b.severity ?? "medium") as keyof typeof severityOrder;
+      return (severityOrder[bSev] ?? 2) - (severityOrder[aSev] ?? 2);
     });
 
     const highestSeverity = sortedAnomalies[0]?.severity || "medium";
@@ -191,7 +193,7 @@ export const AnomalyAlert = React.forwardRef<HTMLDivElement, AnomalyAlertProps>(
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="text-sm font-medium text-foreground capitalize">
-                          {anomaly.type.replace(/_/g, " ")}
+                          {(anomaly.type ?? "unknown").replace(/_/g, " ")}
                         </span>
                         <span
                           className={cn(
@@ -203,12 +205,12 @@ export const AnomalyAlert = React.forwardRef<HTMLDivElement, AnomalyAlertProps>(
                                 : "bg-yellow-200 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
                           )}
                         >
-                          {severityLabels[anomaly.severity]}
+                          {severityLabels[(anomaly.severity ?? "medium") as keyof typeof severityLabels]}
                         </span>
                       </div>
-                      <p className="text-sm text-foreground/80">{anomaly.description}</p>
+                      <p className="text-sm text-foreground/80">{anomaly.description ?? ""}</p>
                       <p className="text-xs text-muted-foreground mt-1">
-                        {formatTimestamp(anomaly.timestamp)}
+                        {formatTimestamp(anomaly.timestamp ?? "")}
                       </p>
                     </div>
                   </div>

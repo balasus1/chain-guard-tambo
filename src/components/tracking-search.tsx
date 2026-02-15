@@ -51,7 +51,7 @@ export function TrackingSearch() {
   return (
     <div className="space-y-6">
       {/* Search Bar */}
-      <div className="bg-background border border-border rounded-lg p-4">
+      <div className="glossy-card p-4 sm:p-5">
         <form
           onSubmit={(e) => {
             e.preventDefault();
@@ -100,6 +100,7 @@ export function TrackingSearch() {
       {!isSearching && shipment && (
         <div className="space-y-6">
           {/* Shipment Card */}
+          <div className="glossy-card overflow-hidden rounded-2xl">
           <ShipmentCard
             trackingNumber={shipment.tracking_number}
             courierCode={shipment.courier_code}
@@ -117,14 +118,17 @@ export function TrackingSearch() {
             title={shipment.title}
             variant="detailed"
           />
+          </div>
 
           {/* Anomalies */}
           {anomalies && anomalies.hasAnomaly && (
+            <div className="glossy-card overflow-hidden rounded-2xl">
             <AnomalyAlert
               anomalies={anomalies.anomalies}
               trackingNumber={shipment.tracking_number}
               onReportAnomaly={handleReportAnomaly}
             />
+            </div>
           )}
 
           {/* Ticket Form */}

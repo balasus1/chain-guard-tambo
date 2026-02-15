@@ -15,6 +15,10 @@ import { ShipmentCard, shipmentCardSchema } from "@/components/tambo/shipment-ca
 import { AnomalyAlert, anomalyAlertSchema } from "@/components/tambo/anomaly-alert";
 import { TicketForm, ticketFormSchema } from "@/components/tambo/ticket-form";
 import {
+  IncidentHandledCard,
+  incidentHandledCardSchema,
+} from "@/components/tambo/incident-handled-card";
+import {
   getCountryPopulations,
   getGlobalPopulationTrend,
 } from "@/services/population-stats";
@@ -24,6 +28,7 @@ import {
   searchShipments,
   detectShipmentAnomalies,
 } from "@/services/tracking-tools";
+import { auditShipmentTool, handleIncidentTool, generateAuditReportTool } from "@/services/archestra-tools";
 import { shipmentSchema, createTrackingRequestSchema, getTrackingRequestSchema, searchShipmentsFilterSchema } from "@/lib/tracking-schemas";
 import type { TamboComponent } from "@tambo-ai/react";
 import { TamboTool } from "@tambo-ai/react";
@@ -131,6 +136,92 @@ export const tools: TamboTool[] = [
       ).describe("Array of detected anomalies"),
     }),
   },
+  // Archestra Logistics Audit Agent
+  {
+    name: "auditShipment",
+    description:
+      "Archestra Logistics Audit Agent: Answers 'Is this shipment OK?'. Returns verdict (OK/Warning/Failed), SLA status, risk level, anomaly score, detected anomalies, and suggested actions. Use for comprehensive shipment health checks.",
+    tool: auditShipmentTool,
+    inputSchema: z.object({
+      tracking_number: z.string().min(1).describe("Tracking number to audit (e.g., FX9876543210, 1234567890)"),
+    }),
+    outputSchema: z.object({
+      trackingNumber: z.string(),
+      courierCode: z.string(),
+      verdict: z.enum(["OK", "Warning", "Failed"]),
+      slaStatus: z.enum(["on_track", "warning", "failed"]),
+      riskLevel: z.enum(["low", "medium", "high"]),
+      anomalyScore: z.number(),
+      anomalies: z.array(
+        z.object({
+          type: z.string(),
+          severity: z.string(),
+          description: z.string(),
+          timestamp: z.string(),
+        })
+      ),
+      explanation: z.string(),
+      suggestedActions: z.array(z.string()),
+    }),
+  },
+  {
+    name: "handleIncident",
+    description:
+      "Archestra: Handle shipment incident end-to-end. Audits the shipment, then for each suggested action (create_ticket, notify_customer, notify_vendor) checks policy and executes only if allowed. Logs all decisions for audit. Use when user asks to 'handle' or 'resolve' a shipment issue.",
+    tool: handleIncidentTool,
+    inputSchema: z.object({
+      tracking_number: z.string().min(1).describe("Tracking number (e.g., FX9876543210)"),
+      reference_date: z.string().optional().describe("Optional ISO date for demo, e.g. 2024-01-25"),
+    }),
+    outputSchema: z.object({
+      auditResult: z.object({
+        trackingNumber: z.string(),
+        courierCode: z.string(),
+        verdict: z.string(),
+        slaStatus: z.string(),
+        riskLevel: z.string(),
+        anomalyScore: z.number(),
+        anomalies: z.array(
+          z.object({
+            type: z.string(),
+            severity: z.string(),
+            description: z.string(),
+            timestamp: z.string(),
+          })
+        ),
+        explanation: z.string(),
+        suggestedActions: z.array(z.string()),
+      }),
+      outcomes: z.array(
+        z.object({
+          action: z.string(),
+          executed: z.boolean(),
+          denied: z.boolean(),
+          denialReason: z.string().optional(),
+          policyCheck: z.object({
+            allowed: z.boolean(),
+            reason: z.string(),
+            ruleEvaluated: z.string(),
+          }),
+        })
+      ),
+      decisionLogId: z.string(),
+    }),
+  },
+  {
+    name: "generateAuditReport",
+    description:
+      "Generate full audit report download links (PDF + Excel) for a shipment tracking number.",
+    tool: generateAuditReportTool,
+    inputSchema: z.object({
+      tracking_number: z.string().min(1).describe("Tracking number (e.g., FX9876543210)"),
+    }),
+    outputSchema: z.object({
+      trackingNumber: z.string(),
+      pdfUrl: z.string(),
+      excelUrl: z.string(),
+    }),
+  },
 ];
 
 /**
@@ -183,5 +274,12 @@ export const components: TamboComponent[] = [
       "Form component for logging tickets or sending emails about shipment issues. Allows users to report problems with tracking, delays, or anomalies. Includes fields for email, subject, priority, and detailed message. Perfect for customer support integration.",
     component: TicketForm,
     propsSchema: ticketFormSchema,
+  },
+  {
+    name: "IncidentHandledCard",
+    description:
+      "A glossy card that displays shipment incident handling results. Shows tracking number, courier, verdict, detected anomalies, and actions executed automatically as a workflow with icons (Ticket Created, Customer Notified, Vendor Notified). Includes share buttons for Email, WhatsApp, and Notion. Use this when displaying handleIncident or auditShipment results after handling a shipment end-to-end.",
+    component: IncidentHandledCard,
+    propsSchema: incidentHandledCardSchema,
   },
 ];
