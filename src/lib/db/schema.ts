@@ -6,6 +6,7 @@ import {
   timestamp,
   integer,
   unique,
+  primaryKey,
 } from 'drizzle-orm/pg-core';
 
 export const trackedShipments = pgTable(
@@ -17,7 +18,7 @@ export const trackedShipments = pgTable(
     trackingNumber: text('tracking_number').notNull(),
     courierCode: text('courier_code').notNull(),
     label: text('label'),
-    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     lastFetchedAt: timestamp('last_fetched_at', { withTimezone: true }),
     cachedData: jsonb('cached_data'),
   },
@@ -29,11 +30,11 @@ export const trackedShipments = pgTable(
 export const auditResults = pgTable('audit_results', {
   id: uuid('id').defaultRandom().primaryKey(),
   orgId: text('org_id').notNull(),
-  shipmentId: uuid('shipment_id').references(() => trackedShipments.id, {
+  shipmentId: uuid('shipment_id').notNull().references(() => trackedShipments.id, {
     onDelete: 'cascade',
   }),
   auditData: jsonb('audit_data').notNull(),
-  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
 export const orgUsage = pgTable(
@@ -45,10 +46,12 @@ export const orgUsage = pgTable(
     auditsRun: integer('audits_run').default(0).notNull(),
   },
   (t) => ({
-    pk: unique().on(t.orgId, t.month),
+    pk: primaryKey({ columns: [t.orgId, t.month] }),
   })
 );
 
 export type TrackedShipment = typeof trackedShipments.$inferSelect;
 export type NewTrackedShipment = typeof trackedShipments.$inferInsert;
 export type OrgUsage = typeof orgUsage.$inferSelect;
+export type AuditResult = typeof auditResults.$inferSelect;
+export type NewAuditResult = typeof auditResults.$inferInsert;
